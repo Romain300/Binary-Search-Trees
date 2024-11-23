@@ -79,36 +79,64 @@ class Tree {
 
     deleteItem(value) {
         let node = this.root;
+        let parent = null;
 
         if (!node) return null;
 
         while(node) {
 
-            if(node.value === value) {
+            if(node.data === value) {
+               
                 //If no children
-                if (node.right === null && node.left === null) {
-                    node = null;
-                    return;
+                if (node.right === null && node.left === null ) {
+                    if (parent.right === node) {
+                        parent.right = null;
+                    } else {
+                        parent.left = null
+                    };
+                    return "The node has been deleted";
                 };
 
                 //If one child
                 if(node.right && !node.left || !node.right && node.left) {
                     if(node.right) {
-                        node = node.right;
-                        return;
+                        node.data = node.right.data;
+                        node.right = null;
+                        return "The node has been deleted";
                     };
 
                     if(node.left) {
-                        node = node.left;
-                        return;
+                        node.data = node.left.data;
+                        node.left = null;
+                        return "The node has been deleted";
                     };
                 }
 
+                //Review this part !!!!
                 //If two children 
+                if(node.right && node.left) {
+                    let inorderSuccessor = node.right;
+                    while(inorderSuccessor) {
+                        if(inorderSuccessor.left === null) {
+                            node.data = inorderSuccessor.left.data;
+                            inorderSuccessor = null;
+                            return "The node has been deleted";
+                        }
+                        inorderSuccessor = inorderSuccessor.left;
+                    } ; 
+                }
                 
+            }; 
+
+            parent = node;
+
+            if (value < node.data) {
+                node = node.left;
+            } else {
+                node = node.right;
             };
 
-        }
+        };
 
         return null;
 
@@ -123,5 +151,11 @@ class Tree {
 
 let tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 prettyPrint(tree.root);
-tree.insert(10);
+console.log(tree.deleteItem(9));
+prettyPrint(tree.root);
+console.log(tree.deleteItem(324));
+prettyPrint(tree.root);
+console.log(tree.deleteItem(7));
+prettyPrint(tree.root);
+console.log(tree.deleteItem(3));
 prettyPrint(tree.root);
