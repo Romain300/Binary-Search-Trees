@@ -57,23 +57,27 @@ class Tree {
         const newNode = new Node(value);
         let node = this.root;
 
-        if (!node) return null;
+        if (!node) {
+            this.root = newNode;
+            return `Node ${value} has been added`;
+        };
 
         while(node) {
             if(value < node.data) {
                 if(node.left === null) {
                     node.left = newNode;
-                    return newNode;
+                     return `Node ${value} has been added`
                 };
                 node = node.left;
             } else {
                 if(node.right === null) {
                     node.right = newNode;
-                    return newNode;
+                     return `Node ${value} has been added`
                 };
                 node = node.right;
             };
         };
+
     };
 
 
@@ -89,60 +93,73 @@ class Tree {
                
                 //If no children
                 if (node.right === null && node.left === null ) {
-                    if (parent.right === node) {
+                    if (node === this.root) {
+                        this.root = null;
+                    } else if (parent.right === node) {
                         parent.right = null;
-                    } else {
-                        parent.left = null
+                    } else if (parent.left === node) {
+                        parent.left = null;
                     };
-                    return "The node has been deleted";
+                    return `Node ${value} has been deleted`;
                 };
 
                 //If one child
-                if(node.right && !node.left || !node.right && node.left) {
-                    if(node.right) {
-                        node.data = node.right.data;
-                        node.right = null;
-                        return "The node has been deleted";
+                if(node.right === null || node.left === null) {
+                    const child = node.right || node.left;
+                    if (node === this.root) {
+                        this.root = child;
+                    } else if (parent.right === node) {
+                        parent.right = child;
+                    } else if (parent.left === node) {
+                        parent.left = child;
                     };
 
-                    if(node.left) {
-                        node.data = node.left.data;
-                        node.left = null;
-                        return "The node has been deleted";
-                    };
-                }
+                    return `Node ${value} has been deleted`;
+                };
 
-                //Review this part !!!!
+
                 //If two children 
-                if(node.right && node.left) {
+                if(node.right && node.left) { 
                     let inorderSuccessor = node.right;
-                    while(inorderSuccessor) {
-                        if(inorderSuccessor.left === null) {
-                            node.data = inorderSuccessor.left.data;
-                            inorderSuccessor = null;
-                            return "The node has been deleted";
-                        }
+                    let parentSuccessor = node;
+
+                    while(inorderSuccessor.left) {
+                        parentSuccessor = inorderSuccessor;
                         inorderSuccessor = inorderSuccessor.left;
-                    } ; 
-                }
-                
-            }; 
+                    };
+
+                    node.data = inorderSuccessor.data;
+
+                    //review the following partie
+                    
+                    if (inorderSuccessor.right) {
+                        if (parentSuccessor.left === inorderSuccessor) {
+                            parentSuccessor.left = inorderSuccessor.right;
+                        } else {
+                            parentSuccessor.right = inorderSuccessor.right;
+                        };
+                    } else {
+                        if(parentSuccessor.left === inorderSuccessor) {
+                            parentSuccessor.left = null;
+                        } else {
+                            parentSuccessor.right = null;
+                        }
+                        
+                    }
+
+                    return `Node ${value} has been deleted`;
+                }; 
+            };
 
             parent = node;
-
             if (value < node.data) {
                 node = node.left;
             } else {
                 node = node.right;
             };
-
         };
-
         return null;
-
-    }
-
-
+    };
 
 };
 
@@ -151,11 +168,7 @@ class Tree {
 
 let tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 prettyPrint(tree.root);
-console.log(tree.deleteItem(9));
+console.log(tree.deleteItem(67));
 prettyPrint(tree.root);
 console.log(tree.deleteItem(324));
-prettyPrint(tree.root);
-console.log(tree.deleteItem(7));
-prettyPrint(tree.root);
-console.log(tree.deleteItem(3));
 prettyPrint(tree.root);
