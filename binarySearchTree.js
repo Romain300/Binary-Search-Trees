@@ -20,7 +20,8 @@ function prettyPrint (node, prefix = "", isLeft = true) {
     if (node.left !== null) {
       prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
     }
-  };
+};
+  
 
 //Build a BST from an array, it removes duplicate and sorts the array before.
 function buildTree(array) {
@@ -161,6 +162,61 @@ class Tree {
         return null;
     };
 
+    find(value) {
+        let node = this.root;
+        
+        while(node) {
+            if (node.data === value) return node;
+
+            if (value < node.data) {
+                node = node.left
+            } else {
+                node = node.right;
+            }
+        };
+
+        return "Value not is the tree";
+    };
+
+    //Breadth-First
+    levelOrder(callback) {
+        if (this.root === null) return null;
+        if(typeof(callback) !== "function") throw new Error("Use a function as argument");
+
+        let queue = [];
+        
+        queue.push(this.root);
+
+        while(queue.length > 0) {
+
+            let node = queue.shift();
+            callback(node);
+
+            if(node.left) queue.push(node.left);
+            if(node.right) queue.push(node.right);
+
+        };
+
+        return;
+    };
+
+    inOrder(callback) {
+        let node = this.root;
+        if (node === null) return null;
+        if(typeof(callback) !== "function") throw new Error("Use a function as argument");
+
+        recursion(node);
+
+        function recursion(node) {
+            
+            if(node.left) recursion(node.left);
+
+            callback(node);
+
+            if(node.right) recursion(node.right);
+        } 
+    }
+
 };
 
 
@@ -168,7 +224,8 @@ class Tree {
 
 let tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 prettyPrint(tree.root);
-console.log(tree.deleteItem(67));
-prettyPrint(tree.root);
-console.log(tree.deleteItem(324));
-prettyPrint(tree.root);
+function printNode(node) {
+    console.log(node.data)
+};
+tree.inOrder(printNode);
+
