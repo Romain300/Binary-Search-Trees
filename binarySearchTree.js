@@ -131,7 +131,6 @@ class Tree {
 
                     node.data = inorderSuccessor.data;
 
-                    //review the following partie
                     
                     if (inorderSuccessor.right) {
                         if (parentSuccessor.left === inorderSuccessor) {
@@ -175,7 +174,7 @@ class Tree {
             }
         };
 
-        return "Value not is the tree";
+        return null;
     };
 
     //Breadth-First
@@ -214,18 +213,127 @@ class Tree {
             callback(node);
 
             if(node.right) recursion(node.right);
-        } 
-    }
+        };
+    };
+
+    preOrder(callback) {
+        let node = this.root;
+        if (node === null) return null;
+        if(typeof(callback) !== "function") throw new Error("Use a function as argument");
+
+        recursion(node);
+
+        function recursion(node) {
+
+            callback(node);
+
+            if(node.left) recursion(node.left);
+
+            if(node.right) recursion(node.right);
+
+        };
+    };
+
+    postOrder(callback) {
+        let node = this.root;
+        if (node === null) return null;
+        if(typeof(callback) !== "function") throw new Error("Use a function as argument");
+
+        recursion(node);
+
+        function recursion(node) {
+
+            if(node.left) recursion(node.left);
+
+            if(node.right) recursion(node.right);
+
+            callback(node);
+
+        };
+    };
+
+    height(value) {
+        const node = this.find(value);
+
+        return recursion(node);
+
+        function recursion(node) {
+
+            if (!node) return 0;
+            
+            if (!node.left && !node.right) return 0;
+
+            return 1 + Math.max(recursion(node.right), recursion(node.left))
+        };
+    };
+
+    depth(value) {
+        const nodeToFind = this.find(value);
+        if (!nodeToFind) return null;
+        let node = this.root;
+        if(!node) return 0;
+
+        let step = 0;
+        
+        while(node) {
+            if(node.data === value) return step;
+            
+            if(value < node.data) {
+                node = node.left;
+                step += 1;
+            }
+
+            if(value > node.data) {
+                node = node.right;
+                step += 1;
+            }
+
+        };
+    };
+
+    
+    isBalanced() {
+        let node = this.root;
+
+        const recursion = (node) => {
+
+            if(!node) return true;
+
+            const leftHeight = node.left ? this.height(node.left.data) : 0;
+            const rightHeight = node.right ? this.height(node.right.data) : 0;
+
+            if(Math.abs(leftHeight - rightHeight ) > 1) {
+                return false
+            };
+
+            if(recursion(node.left) === false || recursion(node.right) === false) return false;
+
+            return true;
+        };
+
+        return recursion(node)
+  
+    };
 
 };
 
 
 
 
-let tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
+let tree = new Tree([1, 2, 3, 4, 5, 6, 100, 7, 8, 9]);
+tree.insert(200)
+tree.insert(300)
+tree.insert(400)
 prettyPrint(tree.root);
 function printNode(node) {
     console.log(node.data)
 };
-tree.inOrder(printNode);
+
+console.log(tree.height(400))
+console.log(tree.height(100))
+console.log(tree.height(6))
+console.log(tree.height(9))
+
+
+console.log(tree.isBalanced())
 
